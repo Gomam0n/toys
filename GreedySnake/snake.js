@@ -38,9 +38,45 @@ function initGame() {
 
     // 初始化蛇
     snake = [];
+    // 生成随机起始点（确保在画布范围内）
+    const maxX = Math.floor(canvas.width / config.gridSize) - config.initialLength;
+    const maxY = Math.floor(canvas.height / config.gridSize) - config.initialLength;
+    
+    let headX, headY;
+    
+    // 根据方向生成不同排列的蛇身
+    do {
+        headX = Math.floor(Math.random() * (maxX - 3)) + 2;
+        headY = Math.floor(Math.random() * (maxY - 3)) + 2;
+    } while (
+        headX < 1 || headX >= maxX || 
+        headY < 1 || headY >= maxY
+    );
+
+    // 重置方向
+    // 随机生成初始方向
+    const directions = ['up', 'down', 'left', 'right'];
+    direction = directions[Math.floor(Math.random() * 4)];
+    nextDirection = direction;
+
     for (let i = 0; i < config.initialLength; i++) {
-        snake.unshift({x: Math.floor(canvas.width / config.gridSize / 2) - i, y: Math.floor(canvas.height / config.gridSize / 2)});
+        switch(direction) {
+            case 'right':
+                snake.unshift({x: headX + i, y: headY});
+                break;
+            case 'left':
+                snake.unshift({x: headX - i, y: headY});
+                break;
+            case 'up':
+                snake.unshift({x: headX, y: headY - i});
+                break;
+            case 'down':
+                snake.unshift({x: headX, y: headY + i});
+                break;
+        }
     }
+    console.log(direction)
+    console.log(nextDirection)
     
     // 生成第一个食物
     generateFood();
@@ -49,9 +85,6 @@ function initGame() {
     score = 0;
     updateScore();
     
-    // 重置方向
-    direction = 'right';
-    nextDirection = 'right';
     
     // 隐藏游戏结束界面
     gameOverElement.style.display = 'none';
@@ -111,6 +144,12 @@ function gameStep() {
         case 'left': head.x--; break;
         case 'right': head.x++; break;
     }
+    console.log(direction)
+    console.log(nextDirection)
+    for(let i = 0; i < snake.length; i++) {
+        console.log(snake[i].x,snake[i].y)
+    }
+    console.log(head.x,head.y)
     
     // 检查碰撞
     if (isCollision(head)) {
@@ -144,11 +183,11 @@ function isCollision(head) {
     
     // 检查自身碰撞
     // 我们需要检查蛇身（除了蛇尾，因为蛇尾会在移动时离开当前位置）
-    //for (let i = 0; i < snake.length - 1; i++) {
-    //    if (snake[i].x === head.x && snake[i].y === head.y) {
-    //        return true;
-    //    }
-   // }
+    for (let i = 0; i < snake.length; i++) {
+        if (snake[i].x === head.x && snake[i].y === head.y) {
+            return true;
+        }
+    }
     
     return false;
 }
