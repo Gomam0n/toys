@@ -82,6 +82,35 @@ export class Game {
     }
 
     /**
+     * 设置游戏难度
+     * @param {String} difficulty 难度级别 ('easy', 'medium', 'hard')
+     */
+    setDifficulty(difficulty) {
+        if (['easy', 'medium', 'hard'].includes(difficulty)) {
+            config.currentDifficulty = difficulty;
+            
+            // 应用难度设置
+            const difficultyConfig = config.difficulties[difficulty];
+            config.initialSpeed = difficultyConfig.speed;
+            config.speed = difficultyConfig.speed;
+            config.speedDecrement = difficultyConfig.speedDecrement;
+            config.initialLength = difficultyConfig.initialLength;
+            config.initialScore = difficultyConfig.initialScore;
+            
+            console.log(`难度已设置为: ${difficulty}`);
+        }
+    }
+    
+    /**
+     * 显示难度选择对话框
+     */
+    showDifficultyDialog() {
+        this.uiManager.showDifficultyDialog();
+        // 高亮当前选中的难度
+        this.uiManager.highlightDifficultyButton(config.currentDifficulty);
+    }
+    
+    /**
      * 重置游戏状态
      */
     resetGame() {
@@ -292,6 +321,8 @@ export class Game {
         
         // 显示棋盘大小选择对话框
         this.uiManager.showBoardSizeDialog();
+        // 高亮当前选中的棋盘大小
+        this.uiManager.highlightBoardSizeButton(config.currentBoardSize);
     }
 
     /**
@@ -301,6 +332,7 @@ export class Game {
         console.log('开始游戏初始化...');
 
         this.uiManager.hideBoardSizeDialog();
+        this.uiManager.hideDifficultyDialog();
         
         // 清除现有的游戏循环
         if (this.gameLoop) {

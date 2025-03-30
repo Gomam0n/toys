@@ -13,6 +13,11 @@ export class UIManager {
         this.finalScoreElement = null;
         this.startDialogElement = null;
         this.boardSizeDialogElement = null;
+        this.difficultyDialogElement = null;
+        
+        // 按钮元素
+        this.boardSizeButtons = {};
+        this.difficultyButtons = {};
     }
 
     /**
@@ -24,6 +29,21 @@ export class UIManager {
         this.finalScoreElement = document.getElementById('final-score');
         this.startDialogElement = document.getElementById('start-dialog');
         this.boardSizeDialogElement = document.getElementById('board-size-dialog');
+        this.difficultyDialogElement = document.getElementById('difficulty-dialog');
+        
+        // 初始化棋盘大小按钮
+        this.boardSizeButtons = {
+            small: document.getElementById('btn-size-small'),
+            medium: document.getElementById('btn-size-medium'),
+            large: document.getElementById('btn-size-large')
+        };
+        
+        // 初始化难度按钮
+        this.difficultyButtons = {
+            easy: document.getElementById('btn-diff-easy'),
+            medium: document.getElementById('btn-diff-medium'),
+            hard: document.getElementById('btn-diff-hard')
+        };
     }
 
     /**
@@ -138,6 +158,8 @@ export class UIManager {
      * 显示棋盘大小选择对话框
      */
     showBoardSizeDialog() {
+        // 隐藏开始对话框
+        this.hideStartDialog();
         this.boardSizeDialogElement.style.display = 'block';
     }
     
@@ -146,5 +168,53 @@ export class UIManager {
      */
     hideBoardSizeDialog() {
         this.boardSizeDialogElement.style.display = 'none';
+    }
+    
+    /**
+     * 显示难度选择对话框
+     */
+    showDifficultyDialog() {
+        // 隐藏棋盘大小对话框
+        this.hideBoardSizeDialog();
+        this.difficultyDialogElement.style.display = 'block';
+    }
+    
+    /**
+     * 隐藏难度选择对话框
+     */
+    hideDifficultyDialog() {
+        this.difficultyDialogElement.style.display = 'none';
+    }
+    
+    /**
+     * 高亮选中的棋盘大小按钮
+     * @param {String} size 棋盘大小 ('small', 'medium', 'large')
+     */
+    highlightBoardSizeButton(size) {
+        // 移除所有按钮的active类
+        Object.values(this.boardSizeButtons).forEach(button => {
+            if (button) button.classList.remove('active');
+        });
+        
+        // 为选中的按钮添加active类
+        if (this.boardSizeButtons[size]) {
+            this.boardSizeButtons[size].classList.add('active');
+        }
+    }
+    
+    /**
+     * 高亮选中的难度按钮
+     * @param {String} difficulty 难度级别 ('easy', 'medium', 'hard')
+     */
+    highlightDifficultyButton(difficulty) {
+        // 移除所有按钮的active类
+        Object.values(this.difficultyButtons).forEach(button => {
+            if (button) button.classList.remove('active');
+        });
+        
+        // 为选中的按钮添加active类
+        if (this.difficultyButtons[difficulty]) {
+            this.difficultyButtons[difficulty].classList.add('active');
+        }
     }
 }

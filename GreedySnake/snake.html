@@ -30,7 +30,7 @@
             font-size: 20px;
             font-weight: bold;
         }
-        #game-over, #start-dialog, #board-size-dialog {
+        #game-over, #start-dialog, #board-size-dialog, #difficulty-dialog {
             display: none;
             position: absolute;
             top: 50%;
@@ -55,6 +55,11 @@
         button:hover {
             background-color: #45a049;
         }
+        button.active {
+            box-shadow: 0 0 10px white;
+            transform: scale(1.1);
+            border: 2px solid white;
+        }
     </style>
 </head>
 <body>
@@ -69,17 +74,26 @@
         <div id="board-size-dialog">
             <h2>选择棋盘大小</h2>
             <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 15px;">
-                <button onclick="setBoardSize('small')" style="background-color: #2196F3;">小</button>
-                <button onclick="setBoardSize('medium')" style="background-color: #4CAF50;">中</button>
-                <button onclick="setBoardSize('large')" style="background-color: #FF5722;">大</button>
+                <button id="btn-size-small" onclick="setBoardSize('small')" style="background-color: #2196F3;">小</button>
+                <button id="btn-size-medium" onclick="setBoardSize('medium')" style="background-color: #4CAF50;">中</button>
+                <button id="btn-size-large" onclick="setBoardSize('large')" style="background-color: #FF5722;">大</button>
             </div>
-            <button onclick="startGame()">确认</button>
+            <button onclick="showDifficultyDialog()">确认</button>
+        </div>
+        <div id="difficulty-dialog">
+            <h2>选择难度级别</h2>
+            <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 15px;">
+                <button id="btn-diff-easy" onclick="setDifficulty('easy')" style="background-color: #4CAF50;">简单</button>
+                <button id="btn-diff-medium" onclick="setDifficulty('medium')" style="background-color: #FFC107;">中等</button>
+                <button id="btn-diff-hard" onclick="setDifficulty('hard')" style="background-color: #F44336;">困难</button>
+            </div>
+            <button onclick="startGame()">开始</button>
         </div>
         <div id="start-dialog">
             <h2>贪吃蛇游戏</h2>
             <p>使用方向键控制蛇的移动方向</p>
             <p>吃到食物可以增加分数</p>
-            <button onclick="confirmStartGame()">开始游戏</button>
+            <button onclick="showBoardSizeDialog()">开始游戏</button>
         </div>
     </div>
     <script type="module" src="js/main.js"></script>

@@ -31,5 +31,21 @@ window.setBoardSize = function(size) {
     if (['small', 'medium', 'large'].includes(size)) {
         config.currentBoardSize = size;
         game.updateBoardSize();
+        // 高亮选中的按钮
+        game.uiManager.highlightBoardSizeButton(size);
+    }
+};
+
+// 显示难度选择对话框
+window.showDifficultyDialog = function() {
+    game.showDifficultyDialog();
+};
+
+// 设置游戏难度的函数
+window.setDifficulty = function(difficulty) {
+    if (['easy', 'medium', 'hard'].includes(difficulty)) {
+        game.setDifficulty(difficulty);
+        // 高亮选中的按钮
+        game.uiManager.highlightDifficultyButton(difficulty);
     }
 };
