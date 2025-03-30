@@ -37,6 +37,9 @@ export class Game {
         this.canvas = document.getElementById('game-canvas');
         this.ctx = this.canvas.getContext('2d');
         
+        // 应用默认棋盘大小
+        this.applyBoardSize();
+        
         // 初始化组件
         this.renderer = new Renderer(this.canvas, this.ctx);
         this.inputController = new InputController();
@@ -47,6 +50,35 @@ export class Game {
         
         // 显示开始对话框
         this.showStartDialog();
+    }
+    
+    /**
+     * 应用当前选择的棋盘大小
+     */
+    applyBoardSize() {
+        const boardConfig = config.boardSizes[config.currentBoardSize];
+        this.canvas.width = boardConfig.width;
+        this.canvas.height = boardConfig.height;
+        config.gridSize = boardConfig.gridSize;
+    }
+    
+    /**
+     * 更新棋盘大小
+     */
+    updateBoardSize() {
+        this.applyBoardSize();
+        
+        // 如果在开始对话框中，重新渲染一次游戏画面作为背景
+        //if (!this.gameLoop) {
+        //   this.resetGame();
+        //    this.renderer.render(this.snake, this.food, this.inputController.getNextDirection(), this.currentScoreMultiplier);
+       // }
+    }
+
+    setBoardSize(size) {
+        config.currentBoardSize = size;
+        this.updateBoardSize();
+        //this.startGame();
     }
 
     /**
@@ -61,8 +93,10 @@ export class Game {
         this.snake = [];
         
         // 生成随机起始点（确保在画布范围内）
-        const maxX = Math.floor(this.canvas.width / config.gridSize) - config.initialLength;
-        const maxY = Math.floor(this.canvas.height / config.gridSize) - config.initialLength;
+        const boardConfig = config.boardSizes[config.currentBoardSize];
+        const gridCount = boardConfig.gridCount;
+        const maxX = gridCount - config.initialLength;
+        const maxY = gridCount - config.initialLength;
         
         let headX, headY;
         
@@ -115,10 +149,13 @@ export class Game {
      * 生成食物
      */
     generateFood() {
+        const boardConfig = config.boardSizes[config.currentBoardSize];
+        const gridCount = boardConfig.gridCount;
+        
         while (true) {
             this.food = {
-                x: Math.floor(Math.random() * (this.canvas.width / config.gridSize)),
-                y: Math.floor(Math.random() * (this.canvas.height / config.gridSize))
+                x: Math.floor(Math.random() * gridCount),
+                y: Math.floor(Math.random() * gridCount)
             };
             
             // 确保食物不会生成在蛇身上
@@ -210,9 +247,12 @@ export class Game {
      * @returns {Boolean} 是否碰撞
      */
     isCollision(head) {
+        const boardConfig = config.boardSizes[config.currentBoardSize];
+        const gridCount = boardConfig.gridCount;
+        
         // 检查墙壁碰撞
-        if (head.x < 0 || head.x >= this.canvas.width / config.gridSize ||
-            head.y < 0 || head.y >= this.canvas.height / config.gridSize) {
+        if (head.x < 0 || head.x >= gridCount ||
+            head.y < 0 || head.y >= gridCount) {
             return true;
         }
         
@@ -242,12 +282,25 @@ export class Game {
         // 停止输入控制
         this.inputController.stop();
     }
+    
+    /**
+     * 显示棋盘大小选择对话框
+     */
+    showBoardSizeDialog() {
+        // 隐藏游戏结束界面
+        this.uiManager.hideGameOver();
+        
+        // 显示棋盘大小选择对话框
+        this.uiManager.showBoardSizeDialog();
+    }
 
     /**
      * 开始游戏
      */
     startGame() {
         console.log('开始游戏初始化...');
+
+        this.uiManager.hideBoardSizeDialog();
         
         // 清除现有的游戏循环
         if (this.gameLoop) {
@@ -292,10 +345,7 @@ export class Game {
      * 确认开始游戏
      */
     confirmStartGame() {
-        // 隐藏开始对话框
         this.uiManager.hideStartDialog();
-        
-        // 开始游戏
-        this.startGame();
+        this.showBoardSizeDialog();
     }
 }

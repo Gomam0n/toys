@@ -12,6 +12,7 @@ export class UIManager {
         this.gameOverElement = null;
         this.finalScoreElement = null;
         this.startDialogElement = null;
+        this.boardSizeDialogElement = null;
     }
 
     /**
@@ -22,6 +23,7 @@ export class UIManager {
         this.gameOverElement = document.getElementById('game-over');
         this.finalScoreElement = document.getElementById('final-score');
         this.startDialogElement = document.getElementById('start-dialog');
+        this.boardSizeDialogElement = document.getElementById('board-size-dialog');
     }
 
     /**
@@ -130,5 +132,19 @@ export class UIManager {
      */
     hideStartDialog() {
         this.startDialogElement.style.display = 'none';
+    }
+    
+    /**
+     * 显示棋盘大小选择对话框
+     */
+    showBoardSizeDialog() {
+        this.boardSizeDialogElement.style.display = 'block';
+    }
+    
+    /**
+     * 隐藏棋盘大小选择对话框
+     */
+    hideBoardSizeDialog() {
+        this.boardSizeDialogElement.style.display = 'none';
     }
 }
