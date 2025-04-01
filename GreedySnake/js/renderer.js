@@ -18,13 +18,17 @@ export class Renderer {
      * @param {Object} food 食物位置
      * @param {String} direction 蛇的移动方向
      * @param {Number} currentScoreMultiplier 当前得分倍数
+     * @param {Array} obstacles 障碍物位置数组
      */
-    render(snake, food, direction, currentScoreMultiplier) {
+    render(snake, food, direction, currentScoreMultiplier, obstacles = []) {
         // 清空画布
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
         // 绘制网格（可选）
         this.drawGrid();
+        
+        // 绘制障碍物
+        this.drawObstacles(obstacles);
         
         // 绘制蛇
         this.drawSnake(snake, direction);
@@ -153,5 +157,34 @@ export class Renderer {
         this.ctx.fillStyle = foodColor;
         this.ctx.fill();
         this.ctx.globalAlpha = 1.0;
+    }
+
+    /**
+     * 绘制障碍物
+     * @param {Array} obstacles 障碍物位置数组
+     */
+    drawObstacles(obstacles) {
+        if (!obstacles || obstacles.length === 0) return;
+        
+        this.ctx.fillStyle = '#FF0000'; // 红色障碍物
+        
+        obstacles.forEach(obstacle => {
+            this.ctx.fillRect(
+                obstacle.x * config.gridSize,
+                obstacle.y * config.gridSize,
+                config.gridSize - 1,
+                config.gridSize - 1
+            );
+            
+            // 添加边框效果使障碍物更明显
+            this.ctx.strokeStyle = '#880000';
+            this.ctx.lineWidth = 2;
+            this.ctx.strokeRect(
+                obstacle.x * config.gridSize,
+                obstacle.y * config.gridSize,
+                config.gridSize - 1,
+                config.gridSize - 1
+            );
+        });
     }
 }

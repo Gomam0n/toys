@@ -14,6 +14,7 @@ export class Game {
         // 游戏状态
         this.snake = [];
         this.food = null;
+        this.obstacles = []; // 添加障碍物数组
         this.score = 0;
         this.gameLoop = null;
         this.gameStartTime = null;
@@ -121,6 +122,9 @@ export class Game {
         // 初始化蛇
         this.snake = [];
         
+        // 清空障碍物
+        this.obstacles = [];
+        
         // 生成随机起始点（确保在画布范围内）
         const boardConfig = config.boardSizes[config.currentBoardSize];
         const gridCount = boardConfig.gridCount;
@@ -166,6 +170,12 @@ export class Game {
         // 生成第一个食物
         this.generateFood();
         
+        // 生成障碍物（仅在困难模式下）
+        const difficultyConfig = config.difficulties[config.currentDifficulty];
+        if (difficultyConfig.obstacles > 0) {
+            this.generateObstacles(difficultyConfig.obstacles);
+        }
+        
         // 重置分数
         this.score = 0;
         this.uiManager.updateScore(this.score, this.currentScoreMultiplier);
@@ -187,10 +197,50 @@ export class Game {
                 y: Math.floor(Math.random() * gridCount)
             };
             
-            // 确保食物不会生成在蛇身上
-            if (!this.snake.some(segment => segment.x === this.food.x && segment.y === this.food.y)) {
+            // 确保食物不会生成在蛇身上或障碍物上
+            if (!this.snake.some(segment => segment.x === this.food.x && segment.y === this.food.y) &&
+                !this.obstacles.some(obstacle => obstacle.x === this.food.x && obstacle.y === this.food.y)) {
                 break;
             }
+        }
+    }
+    
+    /**
+     * 生成障碍物
+     * @param {Number} count 障碍物数量
+     */
+    generateObstacles(count) {
+        const boardConfig = config.boardSizes[config.currentBoardSize];
+        const gridCount = boardConfig.gridCount;
+        
+        for (let i = 0; i < count; i++) {
+            let obstacle;
+            let validPosition = false;
+            
+            // 尝试生成一个有效的障碍物位置
+            while (!validPosition) {
+                obstacle = {
+                    x: Math.floor(Math.random() * gridCount),
+                    y: Math.floor(Math.random() * gridCount)
+                };
+                
+                // 确保障碍物不会生成在蛇身上、食物上或其他障碍物上
+                validPosition = !this.snake.some(segment => segment.x === obstacle.x && segment.y === obstacle.y) &&
+                               !(this.food && this.food.x === obstacle.x && this.food.y === obstacle.y) &&
+                               !this.obstacles.some(existingObstacle => existingObstacle.x === obstacle.x && existingObstacle.y === obstacle.y);
+                
+                // 额外检查：确保障碍物不会生成在蛇头周围的一定范围内，给玩家一些反应空间
+                if (validPosition && this.snake.length > 0) {
+                    const head = this.snake[0];
+                    const safeDistance = 3; // 安全距离
+                    
+                    if (Math.abs(obstacle.x - head.x) < safeDistance && Math.abs(obstacle.y - head.y) < safeDistance) {
+                        validPosition = false;
+                    }
+                }
+            }
+            
+            this.obstacles.push(obstacle);
         }
     }
 
@@ -267,7 +317,7 @@ export class Game {
         }
         
         // 渲染游戏
-        this.renderer.render(this.snake, this.food, direction, this.currentScoreMultiplier);
+        this.renderer.render(this.snake, this.food, direction, this.currentScoreMultiplier, this.obstacles);
     }
 
     /**
@@ -288,6 +338,13 @@ export class Game {
         // 检查自身碰撞
         for (let i = 0; i < this.snake.length; i++) {
             if (this.snake[i].x === head.x && this.snake[i].y === head.y) {
+                return true;
+            }
+        }
+        
+        // 检查障碍物碰撞
+        for (let i = 0; i < this.obstacles.length; i++) {
+            if (this.obstacles[i].x === head.x && this.obstacles[i].y === head.y) {
                 return true;
             }
         }
@@ -367,7 +424,7 @@ export class Game {
         this.resetGame();
         
         // 渲染一次游戏画面作为背景
-        this.renderer.render(this.snake, this.food, this.inputController.getNextDirection(), this.currentScoreMultiplier);
+        this.renderer.render(this.snake, this.food, this.inputController.getNextDirection(), this.currentScoreMultiplier, this.obstacles);
         
         // 显示开始对话框
         this.uiManager.showStartDialog();

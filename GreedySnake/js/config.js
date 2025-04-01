@@ -29,19 +29,22 @@ export const config = {
             speed: 300,           // 较慢的移动速度
             speedDecrement: 1,     // 每次吃到食物减少的速度值较小
             initialLength: 3,      // 初始蛇长度较短
-            initialScore: 10       // 初始食物得分较低
+            initialScore: 10,      // 初始食物得分较低
+            obstacles: 0           // 无障碍物
         },
         medium: {
             speed: 200,           // 中等移动速度
             speedDecrement: 2,     // 中等速度递减
             initialLength: 4,      // 中等初始长度
-            initialScore: 15       // 中等初始得分
+            initialScore: 15,      // 中等初始得分
+            obstacles: 0           // 无障碍物
         },
         hard: {
             speed: 150,           // 较快的移动速度
             speedDecrement: 3,     // 每次吃到食物减少的速度值较大
             initialLength: 5,      // 初始蛇长度较长
-            initialScore: 20       // 初始食物得分较高
+            initialScore: 20,      // 初始食物得分较高
+            obstacles: 5           // 困难模式有5个障碍物
         }
     },
     currentBoardSize: 'medium', // 默认中等大小
