@@ -49,3 +49,19 @@ window.setDifficulty = function(difficulty) {
         game.uiManager.highlightDifficultyButton(difficulty);
     }
 };
+
+// 排行榜相关函数
+window.showLeaderboard = function() {
+    game.uiManager.showLeaderboard();
+};
+
+window.hideLeaderboard = function() {
+    game.uiManager.hideLeaderboard();
+};
+
+window.switchLeaderboardTab = function(difficulty) {
+    if (['easy', 'medium', 'hard'].includes(difficulty)) {
+        game.uiManager.highlightLeaderboardTab(difficulty);
+        game.uiManager.updateLeaderboardDisplay(difficulty);
+    }
+};

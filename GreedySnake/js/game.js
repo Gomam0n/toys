@@ -49,6 +49,9 @@ export class Game {
         // 初始化UI管理器
         this.uiManager.init();
         
+        // 加载排行榜数据
+        this.loadLeaderboard();
+        
         // 显示开始对话框
         this.showStartDialog();
     }
@@ -362,6 +365,9 @@ export class Game {
             this.gameLoop = null;
         }
         
+        // 保存分数到排行榜
+        this.saveScore(this.score);
+        
         // 显示游戏结束界面
         this.uiManager.showGameOver(this.score);
         
@@ -436,5 +442,153 @@ export class Game {
     confirmStartGame() {
         this.uiManager.hideStartDialog();
         this.showBoardSizeDialog();
+    }
+    
+    /**
+     * 保存得分到排行榜
+     * @param {Number} score 得分
+     */
+    saveScore(score) {
+        const leaderboard = JSON.parse(localStorage.getItem(config.leaderboard.storageKey)) || {};
+        const difficulty = config.currentDifficulty;
+        
+        // 确保当前难度的排行榜存在
+        if (!leaderboard[difficulty]) {
+            leaderboard[difficulty] = [];
+        }
+        
+        // 添加新的得分记录
+        leaderboard[difficulty].push({
+            score: score,
+            timestamp: Date.now()
+        });
+        
+        // 按分数降序排序
+        leaderboard[difficulty].sort((a, b) => b.score - a.score);
+        
+        // 只保留前N名
+        if (leaderboard[difficulty].length > config.leaderboard.maxEntries) {
+            leaderboard[difficulty] = leaderboard[difficulty].slice(0, config.leaderboard.maxEntries);
+        }
+        
+        // 保存到localStorage
+        localStorage.setItem(config.leaderboard.storageKey, JSON.stringify(leaderboard));
+        
+        // 更新UI显示
+        this.uiManager.renderLeaderboard(leaderboard);
+    }
+    
+    /**
+     * 加载排行榜数据
+     */
+    loadLeaderboard() {
+        const leaderboard = JSON.parse(localStorage.getItem(config.leaderboard.storageKey)) || {};
+        
+        // 确保所有难度级别的排行榜都存在
+        config.leaderboard.difficulties.forEach(difficulty => {
+            if (!leaderboard[difficulty]) {
+                leaderboard[difficulty] = [];
+            }
+        });
+        
+        // 更新UI显示
+        this.uiManager.renderLeaderboard(leaderboard);
+    }
+
+    /**
+     * 保存得分到排行榜
+     */
+    saveScore(score) {
+        const leaderboard = JSON.parse(localStorage.getItem(config.leaderboard.storageKey)) || {};
+        const difficulty = config.currentDifficulty;
+        
+        if (!leaderboard[difficulty]) {
+            leaderboard[difficulty] = [];
+        }
+    
+        leaderboard[difficulty].push({
+            score: score,
+            timestamp: Date.now()
+        });
+    
+        // 排序并保留前3名
+        leaderboard[difficulty].sort((a, b) => b.score - a.score);
+        leaderboard[difficulty] = leaderboard[difficulty].slice(0, config.leaderboard.maxEntries);
+    
+        localStorage.setItem(config.leaderboard.storageKey, JSON.stringify(leaderboard));
+        this.uiManager.renderLeaderboard(leaderboard);
+    }
+
+    /**
+     * 显示开始对话框
+     */
+    showStartDialog() {
+        // 初始化游戏状态但不启动游戏循环
+        this.resetGame();
+        
+        // 渲染一次游戏画面作为背景
+        this.renderer.render(this.snake, this.food, this.inputController.getNextDirection(), this.currentScoreMultiplier, this.obstacles);
+        
+        // 显示开始对话框
+        this.uiManager.showStartDialog();
+    }
+
+    /**
+     * 确认开始游戏
+     */
+    confirmStartGame() {
+        this.uiManager.hideStartDialog();
+        this.showBoardSizeDialog();
+    }
+    
+    /**
+     * 保存得分到排行榜
+     * @param {Number} score 得分
+     */
+    saveScore(score) {
+        const leaderboard = JSON.parse(localStorage.getItem(config.leaderboard.storageKey)) || {};
+        const difficulty = config.currentDifficulty;
+        
+        // 确保当前难度的排行榜存在
+        if (!leaderboard[difficulty]) {
+            leaderboard[difficulty] = [];
+        }
+        
+        // 添加新的得分记录
+        leaderboard[difficulty].push({
+            score: score,
+            timestamp: Date.now()
+        });
+        
+        // 按分数降序排序
+        leaderboard[difficulty].sort((a, b) => b.score - a.score);
+        
+        // 只保留前N名
+        if (leaderboard[difficulty].length > config.leaderboard.maxEntries) {
+            leaderboard[difficulty] = leaderboard[difficulty].slice(0, config.leaderboard.maxEntries);
+        }
+        
+        // 保存到localStorage
+        localStorage.setItem(config.leaderboard.storageKey, JSON.stringify(leaderboard));
+        
+        // 更新UI显示
+        this.uiManager.renderLeaderboard(leaderboard);
+    }
+    
+    /**
+     * 加载排行榜数据
+     */
+    loadLeaderboard() {
+        const leaderboard = JSON.parse(localStorage.getItem(config.leaderboard.storageKey)) || {};
+        
+        // 确保所有难度级别的排行榜都存在
+        config.leaderboard.difficulties.forEach(difficulty => {
+            if (!leaderboard[difficulty]) {
+                leaderboard[difficulty] = [];
+            }
+        });
+        
+        // 更新UI显示
+        this.uiManager.renderLeaderboard(leaderboard);
     }
 }

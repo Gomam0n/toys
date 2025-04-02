@@ -14,6 +14,7 @@ export class UIManager {
         this.startDialogElement = null;
         this.boardSizeDialogElement = null;
         this.difficultyDialogElement = null;
+        this.leaderboardDialogElement = null;
         
         // 按钮元素
         this.boardSizeButtons = {};
@@ -43,6 +44,19 @@ export class UIManager {
             easy: document.getElementById('btn-diff-easy'),
             medium: document.getElementById('btn-diff-medium'),
             hard: document.getElementById('btn-diff-hard')
+        };
+        
+        // 初始化排行榜对话框元素
+        this.leaderboardDialogElement = document.getElementById('leaderboard-dialog');
+        this.leaderboardTabs = {
+            easy: document.getElementById('leaderboard-easy'),
+            medium: document.getElementById('leaderboard-medium'),
+            hard: document.getElementById('leaderboard-hard')
+        };
+        this.leaderboardLists = {
+            easy: document.getElementById('leaderboard-list-easy'),
+            medium: document.getElementById('leaderboard-list-medium'),
+            hard: document.getElementById('leaderboard-list-hard')
         };
     }
 
@@ -217,4 +231,61 @@ export class UIManager {
             this.difficultyButtons[difficulty].classList.add('active');
         }
     }
+    
+    /**
+     * 显示排行榜对话框
+     */
+    showLeaderboard() {
+        // 隐藏游戏结束界面
+        this.gameOverElement.style.display = 'none';
+        // 显示排行榜
+        this.leaderboardDialogElement.style.display = 'block';
+        this.highlightLeaderboardTab(config.currentDifficulty);
+        this.updateLeaderboardDisplay(config.currentDifficulty);
+    }
+
+    /**
+     * 隐藏排行榜对话框
+     */
+    hideLeaderboard() {
+        // 隐藏排行榜
+        this.leaderboardDialogElement.style.display = 'none';
+        // 重新显示游戏结束界面
+        this.gameOverElement.style.display = 'block';
+    }
+
+    /**
+     * 高亮选中的排行榜选项卡
+     */
+    highlightLeaderboardTab(difficulty) {
+        Object.values(this.leaderboardTabs).forEach(tab => tab.classList.remove('active'));
+        this.leaderboardTabs[difficulty].classList.add('active');
+    }
+
+    /**
+     * 更新排行榜显示
+     */
+    updateLeaderboardDisplay(difficulty) {
+        Object.values(this.leaderboardLists).forEach(list => list.style.display = 'none');
+        this.leaderboardLists[difficulty].style.display = 'block';
+    }
+
+    /**
+     * 渲染排行榜内容
+     */
+    renderLeaderboard(leaderboardData) {
+        Object.entries(leaderboardData).forEach(([difficulty, entries]) => {
+            const listElement = this.leaderboardLists[difficulty];
+            listElement.innerHTML = entries
+                .map((entry, index) => `
+                    <li class="leaderboard-item">
+                        <span class="rank">${index + 1}.</span>
+                        <span class="score">${entry.score}</span>
+                        <span class="date">${new Date(entry.timestamp).toLocaleDateString()}</span>
+                    </li>`)
+                .join('');
+        });
+    }
+
+
 }

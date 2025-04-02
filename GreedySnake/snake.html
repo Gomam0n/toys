@@ -30,7 +30,7 @@
             font-size: 20px;
             font-weight: bold;
         }
-        #game-over, #start-dialog, #board-size-dialog, #difficulty-dialog {
+        #game-over, #start-dialog, #board-size-dialog, #difficulty-dialog, #leaderboard-dialog {
             display: none;
             position: absolute;
             top: 50%;
@@ -60,16 +60,87 @@
             transform: scale(1.1);
             border: 2px solid white;
         }
+        
+        /* 排行榜样式 */
+        .leaderboard-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .tab-button {
+            padding: 8px 15px;
+            background-color: #555;
+        }
+        
+        .tab-button.active {
+            background-color: #4CAF50;
+        }
+        
+        .leaderboard-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 10px;
+            margin-bottom: 5px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
+        
+        .rank {
+            font-weight: bold;
+            width: 30px;
+        }
+        
+        .score {
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .date {
+            color: #aaa;
+            font-size: 0.9em;
+        }
+        
+        .close-button {
+            margin-top: 20px;
+            background-color: #555;
+        }
     </style>
 </head>
 <body>
     <div id="game-container">
         <div id="score">分数: 0</div>
         <canvas id="game-canvas" width="400" height="400"></canvas>
-        <div id="game-over">
-            <h2>游戏结束!</h2>
+        <!-- 新增排行榜对话框 -->
+        <div id="leaderboard-dialog" class="dialog">
+          <div class="dialog-content">
+            <h2>排行榜</h2>
+            
+            <div class="leaderboard-tabs">
+              <button id="leaderboard-easy" class="tab-button" onclick="switchLeaderboardTab('easy')">简单</button>
+              <button id="leaderboard-medium" class="tab-button" onclick="switchLeaderboardTab('medium')">中等</button>
+              <button id="leaderboard-hard" class="tab-button" onclick="switchLeaderboardTab('hard')">困难</button>
+            </div>
+            
+            <div class="leaderboard-list" id="leaderboard-list-easy"></div>
+            <div class="leaderboard-list" id="leaderboard-list-medium" style="display:none;"></div>
+            <div class="leaderboard-list" id="leaderboard-list-hard" style="display:none;"></div>
+            
+            <button onclick="hideLeaderboard()" class="close-button">关闭</button>
+          </div>
+        </div>
+        <div id="game-over" class="dialog">
+            <h2>游戏结束</h2>
             <p>最终得分: <span id="final-score">0</span></p>
-            <button onclick="showBoardSizeDialog()">重新开始</button>
+            <button onclick="startGame()">重新开始</button>
+            <button onclick="showLeaderboard()">查看排行榜</button>
         </div>
         <div id="board-size-dialog">
             <h2>选择棋盘大小</h2>

@@ -47,6 +47,12 @@ export const config = {
             obstacles: 5           // 困难模式有5个障碍物
         }
     },
+    // 新增排行榜配置
+  leaderboard: {
+    maxEntries: 3, // 每个难度保存的最高分数量
+    storageKey: 'snake_leaderboard', // localStorage存储键
+    difficulties: ['easy', 'medium', 'hard'] // 支持的难度等级
+  },
     currentBoardSize: 'medium', // 默认中等大小
     currentDifficulty: 'medium', // 默认中等难度
     gridSize: 20,      // 网格大小（会根据选择的棋盘大小动态调整）
