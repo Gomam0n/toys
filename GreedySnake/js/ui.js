@@ -15,10 +15,15 @@ export class UIManager {
         this.boardSizeDialogElement = null;
         this.difficultyDialogElement = null;
         this.leaderboardDialogElement = null;
+        this.realtimeLeaderboardElement = null;
         
         // 按钮元素
         this.boardSizeButtons = {};
         this.difficultyButtons = {};
+        
+        // 实时排行榜元素
+        this.realtimeLeaderboardTabs = {};
+        this.realtimeLeaderboardLists = {};
     }
 
     /**
@@ -57,6 +62,19 @@ export class UIManager {
             easy: document.getElementById('leaderboard-list-easy'),
             medium: document.getElementById('leaderboard-list-medium'),
             hard: document.getElementById('leaderboard-list-hard')
+        };
+        
+        // 初始化实时排行榜元素
+        this.realtimeLeaderboardElement = document.getElementById('realtime-leaderboard');
+        this.realtimeLeaderboardTabs = {
+            easy: document.getElementById('realtime-leaderboard-easy'),
+            medium: document.getElementById('realtime-leaderboard-medium'),
+            hard: document.getElementById('realtime-leaderboard-hard')
+        };
+        this.realtimeLeaderboardLists = {
+            easy: document.getElementById('realtime-leaderboard-list-easy'),
+            medium: document.getElementById('realtime-leaderboard-list-medium'),
+            hard: document.getElementById('realtime-leaderboard-list-hard')
         };
     }
 
@@ -284,8 +302,59 @@ export class UIManager {
                         <span class="date">${new Date(entry.timestamp).toLocaleDateString()}</span>
                     </li>`)
                 .join('');
+                
+            // 同时更新实时排行榜
+            const realtimeListElement = this.realtimeLeaderboardLists[difficulty];
+            if (realtimeListElement) {
+                realtimeListElement.innerHTML = entries
+                    .map((entry, index) => `
+                        <li class="leaderboard-item">
+                            <span class="rank">${index + 1}.</span>
+                            <span class="score">${entry.score}</span>
+                            <span class="date">${new Date(entry.timestamp).toLocaleDateString()}</span>
+                        </li>`)
+                    .join('');
+            }
         });
     }
+    
+    /**
+     * 高亮选中的实时排行榜选项卡
+     */
+    highlightRealtimeLeaderboardTab(difficulty) {
+        Object.values(this.realtimeLeaderboardTabs).forEach(tab => tab.classList.remove('active'));
+        this.realtimeLeaderboardTabs[difficulty].classList.add('active');
+    }
 
-
+    /**
+     * 更新实时排行榜显示
+     */
+    updateRealtimeLeaderboardDisplay(difficulty) {
+        Object.values(this.realtimeLeaderboardLists).forEach(list => list.style.display = 'none');
+        this.realtimeLeaderboardLists[difficulty].style.display = 'block';
+    }
+    
+    /**
+     * 渲染实时排行榜内容
+     * @param {Object} leaderboardData 排行榜数据
+     */
+    renderRealtimeLeaderboard(leaderboardData) {
+        Object.entries(leaderboardData).forEach(([difficulty, entries]) => {
+            const listElement = this.realtimeLeaderboardLists[difficulty];
+            if (listElement) {
+                listElement.innerHTML = entries
+                    .map((entry, index) => {
+                        // 为当前游戏分数添加高亮样式
+                        const isCurrentClass = entry.isCurrent ? 'style="background-color: rgba(76, 175, 80, 0.3);"' : '';
+                        return `
+                            <li class="leaderboard-item" ${isCurrentClass}>
+                                <span class="rank">${index + 1}.</span>
+                                <span class="score">${entry.score}</span>
+                                <span class="date">${new Date(entry.timestamp).toLocaleDateString()}</span>
+                            </li>`;
+                    })
+                    .join('');
+            }
+        });
+    }
 }

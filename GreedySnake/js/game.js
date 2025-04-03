@@ -52,6 +52,10 @@ export class Game {
         // 加载排行榜数据
         this.loadLeaderboard();
         
+        // 初始化实时排行榜
+        this.uiManager.highlightRealtimeLeaderboardTab(config.currentDifficulty);
+        this.uiManager.updateRealtimeLeaderboardDisplay(config.currentDifficulty);
+        
         // 显示开始对话框
         this.showStartDialog();
     }
@@ -248,6 +252,50 @@ export class Game {
     }
 
     /**
+     * 更新实时排行榜
+     */
+    updateRealtimeLeaderboard() {
+        const leaderboard = JSON.parse(localStorage.getItem(config.leaderboard.storageKey)) || {};
+        
+        // 确保所有难度级别的排行榜都存在
+        config.leaderboard.difficulties.forEach(difficulty => {
+            if (!leaderboard[difficulty]) {
+                leaderboard[difficulty] = [];
+            }
+        });
+        
+        // 添加当前游戏分数到临时排行榜进行实时显示
+        if (this.score > 0) {
+            const tempLeaderboard = JSON.parse(JSON.stringify(leaderboard));
+            const difficulty = config.currentDifficulty;
+            
+            // 添加当前分数（临时，不保存到localStorage）
+            const currentScoreEntry = {
+                score: this.score,
+                timestamp: Date.now(),
+                isCurrent: true // 标记为当前游戏
+            };
+            
+            // 将当前分数添加到临时排行榜
+            tempLeaderboard[difficulty].push(currentScoreEntry);
+            
+            // 按分数降序排序
+            tempLeaderboard[difficulty].sort((a, b) => b.score - a.score);
+            
+            // 只保留前N名
+            if (tempLeaderboard[difficulty].length > config.leaderboard.maxEntries) {
+                tempLeaderboard[difficulty] = tempLeaderboard[difficulty].slice(0, config.leaderboard.maxEntries);
+            }
+            
+            // 更新UI显示临时排行榜
+            this.uiManager.renderRealtimeLeaderboard(tempLeaderboard);
+        } else {
+            // 如果没有当前分数，直接显示保存的排行榜
+            this.uiManager.renderLeaderboard(leaderboard);
+        }
+    }
+    
+    /**
      * 游戏主循环
      */
     gameStep() {
@@ -299,6 +347,9 @@ export class Game {
             
             // 更新分数显示
             this.uiManager.updateScore(this.score, this.currentScoreMultiplier);
+            
+            // 更新实时排行榜
+            this.updateRealtimeLeaderboard();
             
             // 生成新食物
             this.generateFood();
@@ -367,6 +418,9 @@ export class Game {
         
         // 保存分数到排行榜
         this.saveScore(this.score);
+        
+        // 更新实时排行榜
+        // this.updateRealtimeLeaderboard();
         
         // 显示游戏结束界面
         this.uiManager.showGameOver(this.score);

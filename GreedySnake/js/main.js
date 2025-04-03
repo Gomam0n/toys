@@ -65,3 +65,11 @@ window.switchLeaderboardTab = function(difficulty) {
         game.uiManager.updateLeaderboardDisplay(difficulty);
     }
 };
+
+// 实时排行榜相关函数
+window.switchRealtimeLeaderboardTab = function(difficulty) {
+    if (['easy', 'medium', 'hard'].includes(difficulty)) {
+        game.uiManager.highlightRealtimeLeaderboardTab(difficulty);
+        game.uiManager.updateRealtimeLeaderboardDisplay(difficulty);
+    }
+};
